@@ -1,0 +1,24 @@
+# 日志文件
+*.log
+*.err.log
+
+# 临时文件和缓存目录
+tmp/
+cache/
+
+# 数据目录（数据文件不需要提交）
+data/
+data_clickhouse1/
+data_clickhouse2/
+
+# Docker相关
+docker-compose.override.yml
+.env
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 其他不需要的文件
+*.bak
+*.swp
