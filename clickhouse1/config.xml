@@ -1,0 +1,71 @@
+<yandex>
+    <logger>
+        <level>information</level>
+        <log>/var/log/clickhouse-server/clickhouse-server.log</log>
+        <errorlog>/var/log/clickhouse-server/clickhouse-server.err.log</errorlog>
+        <console>true</console>
+    </logger>
+
+    <path>/var/lib/clickhouse/</path>
+    <tmp_path>/var/lib/clickhouse/tmp/</tmp_path>
+    <user_files_path>/var/lib/clickhouse/user_files/</user_files_path>
+    <format_schema_path>/var/lib/clickhouse/format_schemas/</format_schema_path>
+    
+    <query_log>
+        <database>system</database> <!-- 存储在system库 -->
+        <table>query_log</table>
+        <flush_interval_milliseconds>7500</flush_interval_milliseconds> <!-- 7.5秒刷新 -->
+        <size>1000000</size> <!-- 日志最大条数 -->
+    </query_log>
+
+
+    <zookeeper>
+        <node>
+            <host>zookeeper</host>
+            <port>2181</port>
+        </node>
+    </zookeeper>
+    
+    <listen_host>0.0.0.0</listen_host>
+
+<tcp_port>9000</tcp_port>
+<http_port>8123</http_port>
+
+
+    <remote_servers>
+        <my_cluster>
+            <shard>
+                <replica>
+                    <host>clickhouse1</host>
+                    <port>9000</port>
+                </replica>
+            </shard>
+            <shard>
+                <replica>
+                    <host>clickhouse2</host>
+                    <port>9000</port>
+                </replica>
+            </shard>
+        </my_cluster>
+    </remote_servers>
+    
+    <profiles>
+    <default>
+      <max_memory_usage>2147483648</max_memory_usage>
+    </default>
+  </profiles>
+
+  <users>
+    <default>
+      <profile>default</profile>
+      <networks>
+        <ip>::/0</ip>
+      </networks>
+      <password></password>
+    </default>
+  </users>
+
+    <macros incl="macros" />
+
+    <include_from>/etc/clickhouse-server/config.d/macros.xml</include_from>
+</yandex>

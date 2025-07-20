@@ -1,0 +1,7 @@
+<yandex>
+    <macros>
+        <cluster>my_cluster</cluster>
+        <shard>1</shard>
+        <replica>1</replica>
+    </macros>
+</yandex>

@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+  zookeeper:
+    image: zookeeper:3.7
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+
+  clickhouse1:
+    image: clickhouse/clickhouse-server:24.2
+    container_name: clickhouse1
+    volumes:
+      - ./clickhouse1/config.xml:/etc/clickhouse-server/config.xml:ro
+      - ./clickhouse1/macros.xml:/etc/clickhouse-server/config.d/macros.xml:ro
+      - ./clickhouse1/users.xml:/etc/clickhouse-server/users.d/users.xml:ro
+      - ./data/clickhouse1:/var/lib/clickhouse
+    depends_on:
+      - zookeeper
+    ports:
+      - "9000:9000"
+      - "8123:8123"
+
+  clickhouse2:
+    image: clickhouse/clickhouse-server:24.2
+    container_name: clickhouse2
+    volumes:
+      - ./clickhouse2/config.xml:/etc/clickhouse-server/config.xml:ro
+      - ./clickhouse2/macros.xml:/etc/clickhouse-server/config.d/macros.xml:ro
+      - ./clickhouse2/users.xml:/etc/clickhouse-server/users.d/users.xml:ro
+      - ./data/clickhouse2:/var/lib/clickhouse
+    depends_on:
+      - zookeeper
+    ports:
+      - "9001:9000"
+      - "8124:8123"
