@@ -1,4 +1,4 @@
-ATTACH TABLE _ UUID '6d156d99-7585-4c62-9722-e799836694fb'
+ATTACH TABLE _ UUID 'cae8078a-96e3-4a1b-8eec-d657e178c062'
 (
     `hostname` LowCardinality(String) COMMENT 'Hostname of the server executing the query.',
     `type` Enum8('QueryStart' = 1, 'QueryFinish' = 2, 'ExceptionBeforeStart' = 3, 'ExceptionWhileProcessing' = 4) COMMENT 'Type of an event that occurred when executing the query.',
@@ -8,8 +8,8 @@ ATTACH TABLE _ UUID '6d156d99-7585-4c62-9722-e799836694fb'
     `query_start_time` DateTime COMMENT 'Start time of query execution.',
     `query_start_time_microseconds` DateTime64(6) COMMENT 'Start time of query execution with microsecond precision.',
     `query_duration_ms` UInt64 COMMENT 'Duration of query execution in milliseconds.',
-    `read_rows` UInt64 COMMENT 'Total number of rows read from all tables and table functions participated in query. It includes usual subqueries, subqueries for IN and JOIN. For distributed queries read_rows includes the total number of rows read at all replicas. Each replica sends it’s read_rows value, and the server-initiator of the query summarizes all received and local values. The cache volumes do not affect this value.',
-    `read_bytes` UInt64 COMMENT 'Total number of bytes read from all tables and table functions participated in query. It includes usual subqueries, subqueries for IN and JOIN. For distributed queries read_bytes includes the total number of rows read at all replicas. Each replica sends it’s read_bytes value, and the server-initiator of the query summarizes all received and local values. The cache volumes do not affect this value.',
+    `read_rows` UInt64 COMMENT 'Total number of rows read from all tables and table functions participated in query. It includes usual subqueries, subqueries for IN and JOIN. For distributed queries read_rows includes the total number of rows read at all replicas. Each replica sends it\'s read_rows value, and the server-initiator of the query summarizes all received and local values. The cache volumes do not affect this value.',
+    `read_bytes` UInt64 COMMENT 'Total number of bytes read from all tables and table functions participated in query. It includes usual subqueries, subqueries for IN and JOIN. For distributed queries read_bytes includes the total number of rows read at all replicas. Each replica sends it\'s read_bytes value, and the server-initiator of the query summarizes all received and local values. The cache volumes do not affect this value.',
     `written_rows` UInt64 COMMENT 'For INSERT queries, the number of written rows. For other queries, the column value is 0.',
     `written_bytes` UInt64 COMMENT 'For INSERT queries, the number of written bytes (uncompressed). For other queries, the column value is 0.',
     `result_rows` UInt64 COMMENT 'Number of rows in a result of the SELECT query, or a number of rows in the INSERT query.',
@@ -18,7 +18,7 @@ ATTACH TABLE _ UUID '6d156d99-7585-4c62-9722-e799836694fb'
     `current_database` LowCardinality(String) COMMENT 'Name of the current database.',
     `query` String COMMENT ' Query string.',
     `formatted_query` String COMMENT 'Formatted query string.',
-    `normalized_query_hash` UInt64 COMMENT 'Identical hash value without the values of literals for similar queries.',
+    `normalized_query_hash` UInt64 COMMENT 'A numeric hash value, such as it is identical for queries differ only by values of literals.',
     `query_kind` LowCardinality(String) COMMENT 'Type of the query.',
     `databases` Array(LowCardinality(String)) COMMENT 'Names of the databases present in the query.',
     `tables` Array(LowCardinality(String)) COMMENT 'Names of the tables present in the query.',
@@ -49,6 +49,8 @@ ATTACH TABLE _ UUID '6d156d99-7585-4c62-9722-e799836694fb'
     `client_version_major` UInt32 COMMENT 'Major version of the clickhouse-client or another TCP client.',
     `client_version_minor` UInt32 COMMENT 'Minor version of the clickhouse-client or another TCP client.',
     `client_version_patch` UInt32 COMMENT 'Patch component of the clickhouse-client or another TCP client version.',
+    `script_query_number` UInt32 COMMENT 'The query number in a script with multiple queries for clickhouse-client.',
+    `script_line_number` UInt32 COMMENT 'The line number of the query start in a script with multiple queries for clickhouse-client.',
     `http_method` UInt8 COMMENT 'HTTP method that initiated the query. Possible values: 0 — The query was launched from the TCP interface, 1 — GET method was used, 2 — POST method was used.',
     `http_user_agent` LowCardinality(String) COMMENT 'HTTP header UserAgent passed in the HTTP query.',
     `http_referer` String COMMENT 'HTTP header Referer passed in the HTTP query (contains an absolute or partial address of the page making the query).',
@@ -70,10 +72,14 @@ ATTACH TABLE _ UUID '6d156d99-7585-4c62-9722-e799836694fb'
     `used_functions` Array(LowCardinality(String)) COMMENT 'Canonical names of functions, which were used during query execution.',
     `used_storages` Array(LowCardinality(String)) COMMENT 'Canonical names of storages, which were used during query execution.',
     `used_table_functions` Array(LowCardinality(String)) COMMENT 'Canonical names of table functions, which were used during query execution.',
-    `used_row_policies` Array(LowCardinality(String)),
-    `transaction_id` Tuple(UInt64, UInt64, UUID),
-    `query_cache_usage` Enum8('Unknown' = 0, 'None' = 1, 'Write' = 2, 'Read' = 3) COMMENT 'Usage of the query cache during query execution. Values: \'Unknown\' = Status unknown, \'None\' = The query result was neither written into nor read from the query cache, \'Write\' = The query result was written into the query cache, \'Read\' = The query result was read from the query cache.',
-    `asynchronous_read_counters` Map(LowCardinality(String), UInt64),
+    `used_executable_user_defined_functions` Array(LowCardinality(String)) COMMENT 'Canonical names of executable user defined functions, which were used during query execution.',
+    `used_sql_user_defined_functions` Array(LowCardinality(String)) COMMENT 'Canonical names of sql user defined functions, which were used during query execution.',
+    `used_row_policies` Array(LowCardinality(String)) COMMENT 'The list of row policies names that were used during query execution.',
+    `used_privileges` Array(LowCardinality(String)) COMMENT 'Privileges which were successfully checked during query execution.',
+    `missing_privileges` Array(LowCardinality(String)) COMMENT 'Privileges that are missing during query execution.',
+    `transaction_id` Tuple(UInt64, UInt64, UUID) COMMENT 'The identifier of the transaction in scope of which this query was executed.',
+    `query_cache_usage` Enum8('Unknown' = 0, 'None' = 1, 'Write' = 2, 'Read' = 3) COMMENT 'Usage of the query cache during query execution. Values: \'Unknown\' = Status unknown, \'None\' = The query result was neither written into nor read from the query result cache, \'Write\' = The query result was written into the query result cache, \'Read\' = The query result was read from the query result cache.',
+    `asynchronous_read_counters` Map(LowCardinality(String), UInt64) COMMENT 'Metrics for asynchronous reading.',
     `ProfileEvents.Names` Array(LowCardinality(String)) ALIAS mapKeys(ProfileEvents),
     `ProfileEvents.Values` Array(UInt64) ALIAS mapValues(ProfileEvents),
     `Settings.Names` Array(LowCardinality(String)) ALIAS mapKeys(Settings),
@@ -83,4 +89,4 @@ ENGINE = MergeTree
 PARTITION BY toYYYYMM(event_date)
 ORDER BY (event_date, event_time)
 SETTINGS index_granularity = 8192
-COMMENT 'Contains information about executed queries, for example, start time, duration of processing, error messages.'
+COMMENT 'Contains information about executed queries, for example, start time, duration of processing, error messages.\n\nIt is safe to truncate or drop this table at any time.'

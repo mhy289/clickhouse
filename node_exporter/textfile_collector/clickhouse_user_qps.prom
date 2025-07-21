@@ -1,0 +1,4 @@
+# HELP clickhouse_user_qps Query Per Second (QPS) per user in the last N minutes
+# TYPE clickhouse_user_qps gauge
+clickhouse_user_qps{node="clickhouse1",user="default",interval="9m"} 16
+clickhouse_user_qps{node="clickhouse2",user="default",interval="4m"} 6

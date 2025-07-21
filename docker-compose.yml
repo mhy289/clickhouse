@@ -19,6 +19,8 @@ services:
       - "9000:9000"
       - "8123:8123"
       - "9363:9363"
+    networks:
+      - clicknet
 
   clickhouse2:
     image: clickhouse/clickhouse-server:latest
@@ -34,6 +36,8 @@ services:
       - "9001:9000"
       - "8124:8123"
       - "9364:9363"
+    networks:
+      - clicknet
            
   prometheus:
     image: prom/prometheus:latest
@@ -59,9 +63,23 @@ services:
       - prometheus
     networks:
       - clicknet
+      
+  node_exporter:
+    image: prom/node-exporter:latest
+    container_name: node_exporter
+    command:
+      - '--collector.textfile.directory=/textfile_collector'
+    volumes:
+      - /home/clickhouse-cluster/node_exporter/textfile_collector:/textfile_collector:ro
+    ports:
+      - "9100:9100"
+    networks:
+      - clicknet
+
+      
 
 networks:
   clicknet:
-
+    driver: bridge
 volumes:
   grafana_data:

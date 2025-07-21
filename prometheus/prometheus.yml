@@ -1,5 +1,5 @@
 global:
-  scrape_interval: 15s
+  scrape_interval: 1m
 
 scrape_configs:
   - job_name: 'clickhouse-node1'
@@ -8,3 +8,6 @@ scrape_configs:
   - job_name: 'clickhouse-node2'
     static_configs:
       - targets: ['clickhouse2:9363']
+  - job_name: 'node_exporter_clickhouse'
+    static_configs:
+      - targets: ['node_exporter:9100']
